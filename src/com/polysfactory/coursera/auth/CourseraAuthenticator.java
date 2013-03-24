@@ -22,8 +22,11 @@ import android.accounts.AccountAuthenticatorResponse;
 import android.accounts.AccountManager;
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.polysfactory.coursera.activity.LoginActivity;
 
 public class CourseraAuthenticator extends AbstractAccountAuthenticator {
 
@@ -33,24 +36,32 @@ public class CourseraAuthenticator extends AbstractAccountAuthenticator {
 
     private static final String TAG = "CourseraAuthenticator";
 
-    private static final String ACCOUNT_TYPE_COURSERA = "com.polysfactory.coursera";
-
     public CourseraAuthenticator(Context context) {
         super(context);
         this.mContext = context;
     }
 
     @Override
-    public Bundle addAccount(AccountAuthenticatorResponse arg0, String arg1, String arg2,
-            String[] arg3, Bundle arg4) throws NetworkErrorException {
+    public Bundle addAccount(AccountAuthenticatorResponse response, String accountType,
+            String authTokenType, String[] requiredFeatures, Bundle options)
+            throws NetworkErrorException {
         // TODO Auto-generated method stub
-        return null;
+        Log.d(TAG, "addAccount");
+        final Bundle result;
+        final Intent intent;
+
+        intent = new Intent(this.mContext, LoginActivity.class);
+        intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
+        result = new Bundle();
+        result.putParcelable(AccountManager.KEY_INTENT, intent);
+        return result;
     }
 
     @Override
     public Bundle confirmCredentials(AccountAuthenticatorResponse arg0, Account arg1, Bundle arg2)
             throws NetworkErrorException {
         // TODO Auto-generated method stub
+        Log.d(TAG, "confirmCredentials");
         return null;
     }
 
@@ -63,6 +74,8 @@ public class CourseraAuthenticator extends AbstractAccountAuthenticator {
     @Override
     public Bundle getAuthToken(AccountAuthenticatorResponse response, Account account,
             String authTokenType, Bundle options) throws NetworkErrorException {
+
+        Log.d(TAG, "getAuthToken");
 
         Bundle result = null;
 
@@ -95,7 +108,8 @@ public class CourseraAuthenticator extends AbstractAccountAuthenticator {
             String token = httpResponse.getFirstHeader("Set-Cookie").getValue();
             result = new Bundle();
             result.putString(AccountManager.KEY_ACCOUNT_NAME, username);
-            result.putString(AccountManager.KEY_ACCOUNT_TYPE, ACCOUNT_TYPE_COURSERA);
+            result.putString(AccountManager.KEY_ACCOUNT_TYPE,
+                    AccountConstants.ACCOUNT_TYPE_COURSERA);
             result.putString(AccountManager.KEY_AUTHTOKEN, token);
         } else {
             // TODO
