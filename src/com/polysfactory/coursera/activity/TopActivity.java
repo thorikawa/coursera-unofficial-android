@@ -12,10 +12,13 @@ import android.accounts.OperationCanceledException;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.polysfactory.coursera.auth.AccountConstants;
 
 public class TopActivity extends Activity implements AccountManagerCallback<Bundle> {
+
+    String mToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +27,18 @@ public class TopActivity extends Activity implements AccountManagerCallback<Bund
         final AccountManager accountManager = AccountManager.get(this.getApplicationContext());
         Account[] accounts = accountManager
                 .getAccountsByType(AccountConstants.ACCOUNT_TYPE_COURSERA);
-        if (accounts.length == 0) {
+        int numAccounts = accounts.length;
+        if (numAccounts == 0) {
             Thread t = new Thread() {
                 @Override
                 public void run() {
                     // TODO Auto-generated method stub
                     try {
                         Bundle result = accountManager.addAccount(
-                                AccountConstants.ACCOUNT_TYPE_COURSERA,
-                                null,
-                                null, null,
+                                AccountConstants.ACCOUNT_TYPE_COURSERA, null, null, null,
                                 TopActivity.this, TopActivity.this, null).getResult();
                         if (result.containsKey(AccountManager.KEY_INTENT)) {
+                            Log.v("TopActivity", "start activity");
                             TopActivity.this.startActivity((Intent) result
                                     .get(AccountManager.KEY_INTENT));
                         }
@@ -52,12 +55,28 @@ public class TopActivity extends Activity implements AccountManagerCallback<Bund
                 }
             };
             t.start();
+        } else if (numAccounts > 0) {
+            Account account = accounts[0];
+            accountManager.getAuthToken(account, AccountConstants.ACCOUNT_TYPE_COURSERA, null,
+                    false, this, null);
         }
     }
 
     @Override
-    public void run(AccountManagerFuture<Bundle> arg0) {
-        // TODO Auto-generated method stub
-
+    public void run(AccountManagerFuture<Bundle> future) {
+        try {
+            Bundle result = future.getResult();
+            mToken = result.getString(AccountManager.KEY_AUTHTOKEN);
+            Log.v("TopActivity", "Token: " + mToken);
+        } catch (OperationCanceledException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (AuthenticatorException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }
