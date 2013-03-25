@@ -13,16 +13,30 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ListView;
 
+import com.polysfactory.coursera.R;
+import com.polysfactory.coursera.adapter.MyCourseListAdapter;
+import com.polysfactory.coursera.api.LoadCourseListTask;
+import com.polysfactory.coursera.api.LoadCourseListTask.CallbackListner;
 import com.polysfactory.coursera.auth.AccountConstants;
+import com.polysfactory.coursera.model.AuthToken;
+import com.polysfactory.coursera.model.Course;
 
 public class TopActivity extends Activity implements AccountManagerCallback<Bundle> {
 
     String mToken;
 
+    ListView mListView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.my_course_list);
+
+        mListView = (ListView) findViewById(R.id.my_course_list);
+
         // login check
         final AccountManager accountManager = AccountManager.get(this.getApplicationContext());
         Account[] accounts = accountManager
@@ -67,7 +81,17 @@ public class TopActivity extends Activity implements AccountManagerCallback<Bund
         try {
             Bundle result = future.getResult();
             mToken = result.getString(AccountManager.KEY_AUTHTOKEN);
+            AuthToken authToken = new AuthToken(mToken);
             Log.v("TopActivity", "Token: " + mToken);
+            LoadCourseListTask loadCourseListTask = new LoadCourseListTask(authToken,
+                    new CallbackListner() {
+                        @Override
+                        public void onFinish(Course[] courses) {
+                            mListView.setAdapter(new MyCourseListAdapter(TopActivity.this
+                                    .getApplicationContext(), courses));
+                        }
+                    });
+            loadCourseListTask.execute();
         } catch (OperationCanceledException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
