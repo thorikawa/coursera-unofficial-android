@@ -42,13 +42,25 @@ public class MyCourseListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.my_course_item, null);
+            viewHolder = new ViewHolder();
+            viewHolder.courseNameTextView = (TextView) convertView.findViewById(R.id.course_name);
+            viewHolder.universityNameTextView = (TextView) convertView
+                    .findViewById(R.id.course_university_name);
+            convertView.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) convertView.getTag();
         }
-        TextView courseName = (TextView) convertView.findViewById(R.id.course_name);
-        TextView universityName = (TextView) convertView.findViewById(R.id.course_university_name);
-        courseName.setText(mMyCourses[position].name);
-        universityName.setText(mMyCourses[position].getUniversityName());
+        viewHolder.courseNameTextView.setText(mMyCourses[position].name);
+        viewHolder.universityNameTextView.setText(mMyCourses[position].getUniversityName());
         return convertView;
     }
+
+    static class ViewHolder {
+        TextView courseNameTextView;
+        TextView universityNameTextView;
+    }
+
 }
