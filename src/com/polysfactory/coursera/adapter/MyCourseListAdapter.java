@@ -9,17 +9,17 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.polysfactory.coursera.R;
-import com.polysfactory.coursera.model.Course;
+import com.polysfactory.coursera.model.MyListItem;
 
 public class MyCourseListAdapter extends BaseAdapter {
 
     final Context mContext;
 
-    final Course[] mMyCourses;
+    final MyListItem[] mMyCourses;
 
     final LayoutInflater mInflater;
 
-    public MyCourseListAdapter(Context context, Course[] myCourses) {
+    public MyCourseListAdapter(Context context, MyListItem[] myCourses) {
         mContext = context;
         mMyCourses = myCourses;
         mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

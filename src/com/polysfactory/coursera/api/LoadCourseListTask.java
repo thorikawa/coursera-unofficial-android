@@ -18,9 +18,9 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.polysfactory.coursera.model.AuthToken;
-import com.polysfactory.coursera.model.Course;
+import com.polysfactory.coursera.model.MyListItem;
 
-public class LoadCourseListTask extends AsyncTask<Void, Void, Course[]> {
+public class LoadCourseListTask extends AsyncTask<Void, Void, MyListItem[]> {
 
     private static final String TAG = "LoadCourseListTask";
 
@@ -31,15 +31,15 @@ public class LoadCourseListTask extends AsyncTask<Void, Void, Course[]> {
 
     private AuthToken mAuthToken;
 
-    private CallbackListner mCallback;
+    private Callback mCallback;
 
-    public LoadCourseListTask(AuthToken authToken, CallbackListner callback) {
+    public LoadCourseListTask(AuthToken authToken, Callback callback) {
         this.mAuthToken = authToken;
         this.mCallback = callback;
     }
 
     @Override
-    protected Course[] doInBackground(Void... params) {
+    protected MyListItem[] doInBackground(Void... params) {
         HttpClient httpClient = new DefaultHttpClient();
         HttpGet httpGet = new HttpGet(URL);
         httpGet.getParams().setParameter("user_id", String.valueOf(mAuthToken.getUser().id));
@@ -48,7 +48,7 @@ public class LoadCourseListTask extends AsyncTask<Void, Void, Course[]> {
             HttpResponse httpResponse = httpClient.execute(httpGet);
             HttpEntity entity = httpResponse.getEntity();
             String response = EntityUtils.toString(entity);
-            Course[] courses = gson.fromJson(response, Course[].class);
+            MyListItem[] courses = gson.fromJson(response, MyListItem[].class);
             Log.v(TAG, response);
             return courses;
         } catch (ClientProtocolException e) {
@@ -62,13 +62,13 @@ public class LoadCourseListTask extends AsyncTask<Void, Void, Course[]> {
     }
 
     @Override
-    protected void onPostExecute(Course[] courses) {
+    protected void onPostExecute(MyListItem[] courses) {
         if (mCallback != null) {
             mCallback.onFinish(courses);
         }
     };
 
-    public static interface CallbackListner {
-        public void onFinish(Course[] courses);
+    public static interface Callback {
+        public void onFinish(MyListItem[] courses);
     }
 };

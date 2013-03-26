@@ -18,12 +18,13 @@ import android.widget.ListView;
 import com.polysfactory.coursera.R;
 import com.polysfactory.coursera.adapter.MyCourseListAdapter;
 import com.polysfactory.coursera.api.LoadCourseListTask;
-import com.polysfactory.coursera.api.LoadCourseListTask.CallbackListner;
+import com.polysfactory.coursera.api.LoadCourseListTask.Callback;
 import com.polysfactory.coursera.auth.AccountConstants;
 import com.polysfactory.coursera.model.AuthToken;
-import com.polysfactory.coursera.model.Course;
+import com.polysfactory.coursera.model.MyListItem;
 
-public class TopActivity extends Activity implements AccountManagerCallback<Bundle> {
+public class TopActivity extends Activity implements
+        AccountManagerCallback<Bundle> {
 
     String mToken;
 
@@ -83,10 +84,10 @@ public class TopActivity extends Activity implements AccountManagerCallback<Bund
             mToken = result.getString(AccountManager.KEY_AUTHTOKEN);
             AuthToken authToken = new AuthToken(mToken);
             Log.v("TopActivity", "Token: " + mToken);
-            LoadCourseListTask loadCourseListTask = new LoadCourseListTask(authToken,
-                    new CallbackListner() {
+            LoadCourseListTask loadCourseListTask = new LoadCourseListTask(
+                    authToken, new Callback() {
                         @Override
-                        public void onFinish(Course[] courses) {
+                        public void onFinish(MyListItem[] courses) {
                             mListView.setAdapter(new MyCourseListAdapter(TopActivity.this
                                     .getApplicationContext(), courses));
                         }
