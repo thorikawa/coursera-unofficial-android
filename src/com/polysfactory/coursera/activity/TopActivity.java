@@ -13,18 +13,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.polysfactory.coursera.Constants;
+import com.polysfactory.coursera.CourseraApplication;
 import com.polysfactory.coursera.R;
 import com.polysfactory.coursera.adapter.MyCourseListAdapter;
 import com.polysfactory.coursera.api.LoadCourseListTask;
 import com.polysfactory.coursera.api.LoadCourseListTask.Callback;
 import com.polysfactory.coursera.auth.AccountConstants;
 import com.polysfactory.coursera.model.AuthToken;
+import com.polysfactory.coursera.model.Course;
 import com.polysfactory.coursera.model.MyListItem;
 
 public class TopActivity extends Activity implements
-        AccountManagerCallback<Bundle> {
+        AccountManagerCallback<Bundle>, OnItemClickListener {
 
     String mToken;
 
@@ -37,6 +43,7 @@ public class TopActivity extends Activity implements
         setContentView(R.layout.my_course_list);
 
         mListView = (ListView) findViewById(R.id.my_course_list);
+        mListView.setOnItemClickListener(this);
 
         // login check
         final AccountManager accountManager = AccountManager.get(this.getApplicationContext());
@@ -83,7 +90,9 @@ public class TopActivity extends Activity implements
             Bundle result = future.getResult();
             mToken = result.getString(AccountManager.KEY_AUTHTOKEN);
             AuthToken authToken = new AuthToken(mToken);
-            Log.v("TopActivity", "Token: " + mToken);
+            CourseraApplication application = (CourseraApplication) getApplication();
+            application.setAuthToken(authToken);
+
             LoadCourseListTask loadCourseListTask = new LoadCourseListTask(
                     authToken, new Callback() {
                         @Override
@@ -103,5 +112,14 @@ public class TopActivity extends Activity implements
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        MyListItem item = (MyListItem) parent.getItemAtPosition(position);
+        Course course = item.courses[0];
+        Intent intent = new Intent(this, LectureIndexActivity.class);
+        intent.putExtra(Constants.COURSERA_INTENT_KEY_COURSE, course);
+        this.startActivity(intent);
     }
 }

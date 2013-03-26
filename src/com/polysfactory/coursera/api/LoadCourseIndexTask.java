@@ -18,6 +18,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.polysfactory.coursera.model.AuthToken;
 import com.polysfactory.coursera.model.Course;
@@ -25,27 +26,30 @@ import com.polysfactory.coursera.model.VideoLecture;
 
 public class LoadCourseIndexTask extends AsyncTask<Void, Void, List<VideoLecture>> {
 
+    private static final String TAG = "LoadCourseraIndexTask";
+
     private final AuthToken mAuthToken;
-    
+
     private final Course mCourse;
 
     private final Callback mCallback;
-    
-    public LoadCourseIndexTask(AuthToken context, Course course, Callback callback) {
-        this.mAuthToken = context;
+
+    public LoadCourseIndexTask(AuthToken authToken, Course course, Callback callback) {
+        this.mAuthToken = authToken;
         this.mCourse = course;
         this.mCallback = callback;
     }
-    
+
     @Override
     protected List<VideoLecture> doInBackground(Void... arg0) {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(mCourse.homeLink);
+        HttpGet httpGet = new HttpGet(mCourse.homeLink + "/class/index");
         httpGet.setHeader("Cookie", mAuthToken.getCookie());
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
             HttpEntity entity = httpResponse.getEntity();
             String response = EntityUtils.toString(entity);
+            Log.v(TAG, response);
             Document doc = Jsoup.parse(response);
             Elements lectureLinkElements = doc.getElementsByClass("lecture-link");
             List<VideoLecture> lectures = new ArrayList<VideoLecture>();
@@ -72,7 +76,7 @@ public class LoadCourseIndexTask extends AsyncTask<Void, Void, List<VideoLecture
             mCallback.onFinish(result);
         }
     }
-    
+
     public static interface Callback {
         public void onFinish(List<VideoLecture> results);
     }
