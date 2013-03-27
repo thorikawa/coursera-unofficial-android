@@ -39,6 +39,9 @@ public class Course implements Parcelable {
         }
     };
 
+    public Course () {
+    }
+    
     private Course(Parcel in) {
         id = in.readInt();
         homeLink = in.readString();

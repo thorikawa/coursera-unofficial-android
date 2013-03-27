@@ -43,12 +43,14 @@ public class LoadCourseIndexTask extends AsyncTask<Void, Void, List<VideoLecture
     @Override
     protected List<VideoLecture> doInBackground(Void... arg0) {
         HttpClient httpClient = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(mCourse.homeLink + "/class/index");
+        //HttpGet httpGet = new HttpGet(mCourse.homeLink + "/class/index");
+        HttpGet httpGet = new HttpGet(mCourse.homeLink + "/auth/auth_redirector?type=login&subtype=normal");
         httpGet.setHeader("Cookie", mAuthToken.getCookie());
         try {
             HttpResponse httpResponse = httpClient.execute(httpGet);
             HttpEntity entity = httpResponse.getEntity();
             String response = EntityUtils.toString(entity);
+            Log.v(TAG, "request end");
             Log.v(TAG, response);
             Document doc = Jsoup.parse(response);
             Elements lectureLinkElements = doc.getElementsByClass("lecture-link");
