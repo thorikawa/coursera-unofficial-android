@@ -13,6 +13,22 @@ public class Course implements Parcelable {
     public String startDateString;
     public String durationString;
 
+    public String getClassIndexUrl() {
+        if (homeLink.charAt(homeLink.length() - 1) == '/') {
+            return homeLink.substring(0, homeLink.length() - 1) + "/class/index";
+        } else {
+            return homeLink + "/class/index";
+        }
+    }
+
+    public String getLectureIndexUrl() {
+        if (homeLink.charAt(homeLink.length() - 1) == '/') {
+            return homeLink.substring(0, homeLink.length() - 1) + "/lecture/index";
+        } else {
+            return homeLink + "/lecture/index";
+        }
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -39,9 +55,9 @@ public class Course implements Parcelable {
         }
     };
 
-    public Course () {
+    public Course() {
     }
-    
+
     private Course(Parcel in) {
         id = in.readInt();
         homeLink = in.readString();
