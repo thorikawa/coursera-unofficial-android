@@ -41,6 +41,10 @@ public class LoadCourseIndexTask extends Handler {
 
     private final JsCallback mJsCallback;
 
+    private int monitorCount = 0;
+
+    private static final int MAX_MONITOR_COUNT = 10;
+
     /**
      * We use Factory method to retrieve instance since we need to register the
      * event listener to the new instance.
@@ -70,7 +74,9 @@ public class LoadCourseIndexTask extends Handler {
             public void handleEvent(final int eventCode) {
                 if (eventCode == MSG_FINISH_GET_VIDEO_LECTURES) {
                     Log.v(TAG, "video lecture result");
-                    mCallback.onFinish(mJsObject.getVideoLectures());
+                    if (mCallback != null) {
+                        mCallback.onFinish(mJsObject.getVideoLectures());
+                    }
                 }
             }
         };
@@ -92,6 +98,7 @@ public class LoadCourseIndexTask extends Handler {
         WebView webView = mWebViewRef.get();
         if (webView != null) {
             webView.loadUrl(mCourse.getLectureIndexUrl());
+            this.monitorCount = 0;
             this.sendEmptyMessage(MSG_CODE_MONITOR_WEWBVIEW);
         }
     }
@@ -102,6 +109,7 @@ public class LoadCourseIndexTask extends Handler {
 
     public void handleMessage(android.os.Message msg) {
         if (msg.what == MSG_CODE_MONITOR_WEWBVIEW) {
+            this.monitorCount++;
             WebView webView = mWebViewRef.get();
             if (webView != null) {
                 final String url = webView.getUrl();
@@ -111,18 +119,15 @@ public class LoadCourseIndexTask extends Handler {
                     webView.loadUrl("javascript:var links=document.querySelectorAll('"
                             + LECTURE_LINK_SELECTOR + "');"
                             + "for (var i=0; i<links.length; i++) { "
-                            + " var t = links[i].innerText;"
+                            + " var t = links[i].innerHTML;"
                             + " var u = links[i].getAttribute('href');"
                             + " android.findLectureLink(t, u);"
                             + "}"
                             + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");");
-                    if (mCallback != null) {
-                        // TODO
-                        // mCallback.onFinish(result);
-                    }
                 } else {
-                    // TODO set timeout
-                    this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                    if (this.monitorCount < MAX_MONITOR_COUNT) {
+                        this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                    }
                 }
             }
         }
@@ -135,6 +140,7 @@ public class LoadCourseIndexTask extends Handler {
 
         @JavascriptInterface
         public void findLectureLink(String title, String url) {
+            Log.v(TAG, title + ":" + url);
             VideoLecture videoLecture = new VideoLecture();
             videoLecture.title = title;
             videoLecture.url = url;

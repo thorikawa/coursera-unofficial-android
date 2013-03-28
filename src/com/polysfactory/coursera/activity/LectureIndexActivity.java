@@ -44,9 +44,14 @@ public class LectureIndexActivity extends Activity {
         LoadCourseIndexTask loadCourseIndexTask = LoadCourseIndexTask.newInstance(
                 application.getAuthToken(), course, new Callback() {
                     @Override
-                    public void onFinish(List<VideoLecture> results) {
-                        mVideoLectureListView.setAdapter(new VideoLectureListAdapter(
-                                LectureIndexActivity.this, results));
+                    public void onFinish(final List<VideoLecture> results) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mVideoLectureListView.setAdapter(new VideoLectureListAdapter(
+                                        LectureIndexActivity.this, results));
+                            }
+                        });
                     }
                 }, mWebView);
         loadCourseIndexTask.execute();
