@@ -2,5 +2,6 @@
 <lint>
     <issue id="SetJavaScriptEnabled">
         <ignore path="src/com/polysfactory/coursera/activity/LoginActivity.java" />
+        <ignore path="src/com/polysfactory/coursera/api/LoadCourseIndexTask.java" />
     </issue>
 </lint>

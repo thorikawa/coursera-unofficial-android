@@ -41,7 +41,7 @@ public class LectureIndexActivity extends Activity {
 
         CourseraApplication application = (CourseraApplication) getApplication();
         Course course = getIntent().getParcelableExtra(Constants.COURSERA_INTENT_KEY_COURSE);
-        LoadCourseIndexTask loadCourseIndexTask = new LoadCourseIndexTask(
+        LoadCourseIndexTask loadCourseIndexTask = LoadCourseIndexTask.newInstance(
                 application.getAuthToken(), course, new Callback() {
                     @Override
                     public void onFinish(List<VideoLecture> results) {
