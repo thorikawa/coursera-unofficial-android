@@ -22,10 +22,20 @@ public class Course implements Parcelable {
     }
 
     public String getLectureIndexUrl() {
+        final String postFix = "/lecture/index";
         if (homeLink.charAt(homeLink.length() - 1) == '/') {
-            return homeLink.substring(0, homeLink.length() - 1) + "/lecture/index";
+            return homeLink.substring(0, homeLink.length() - 1) + postFix;
         } else {
-            return homeLink + "/lecture/index";
+            return homeLink + postFix;
+        }
+    }
+
+    public String getAuthUrl() {
+        String postFix = "/auth/welcome";
+        if (homeLink.charAt(homeLink.length() - 1) == '/') {
+            return homeLink.substring(0, homeLink.length() - 1) + postFix;
+        } else {
+            return homeLink + postFix;
         }
     }
 

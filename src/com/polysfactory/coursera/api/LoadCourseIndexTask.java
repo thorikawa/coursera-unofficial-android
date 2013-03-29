@@ -25,6 +25,8 @@ public class LoadCourseIndexTask extends Handler {
 
     private static final int MSG_CODE_MONITOR_WEWBVIEW = 0;
 
+    private static final int MSG_CODE_LOGIN = 1;
+
     private static final int MSG_FINISH_GET_VIDEO_LECTURES = 100;
 
     private static final String LECTURE_LINK_SELECTOR = ".lecture-link";
@@ -43,7 +45,9 @@ public class LoadCourseIndexTask extends Handler {
 
     private int monitorCount = 0;
 
-    private static final int MAX_MONITOR_COUNT = 10;
+    private static final int MONITOR_INTERVAL_MSEC = 500;
+
+    private static final int MAX_MONITOR_COUNT = 50;
 
     /**
      * We use Factory method to retrieve instance since we need to register the
@@ -114,21 +118,35 @@ public class LoadCourseIndexTask extends Handler {
             if (webView != null) {
                 final String url = webView.getUrl();
                 Log.d(TAG, "url: " + url);
-                if (url != null && url.equals(mCourse.getLectureIndexUrl())) {
-                    Log.d(TAG, "fired!!");
-                    webView.loadUrl("javascript:var links=document.querySelectorAll('"
-                            + LECTURE_LINK_SELECTOR + "');"
-                            + "for (var i=0; i<links.length; i++) { "
-                            + " var t = links[i].innerHTML;"
-                            + " var u = links[i].getAttribute('href');"
-                            + " android.findLectureLink(t, u);"
-                            + "}"
-                            + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");");
-                } else {
-                    if (this.monitorCount < MAX_MONITOR_COUNT) {
-                        this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                if (url != null) {
+                    if (url.equals(mCourse.getLectureIndexUrl())) {
+                        Log.d(TAG, "fired!!");
+                        webView.loadUrl("javascript:document.addEventListener('DOMContentLoaded', function(){"
+                                + "var links=document.querySelectorAll('" + LECTURE_LINK_SELECTOR
+                                + "');"
+                                + "for (var i=0; i<links.length; i++) { "
+                                + " var t = links[i].innerHTML;"
+                                + " var u = links[i].getAttribute('href');"
+                                + " android.findLectureLink(t, u);"
+                                + "}"
+                                + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");"
+                                + "});");
+                        return;
+                    } else if (url.startsWith(mCourse.getAuthUrl())) {
+                        this.sendEmptyMessageDelayed(MSG_CODE_LOGIN, MONITOR_INTERVAL_MSEC);
+                        return;
                     }
                 }
+                if (this.monitorCount < MAX_MONITOR_COUNT) {
+                    this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                }
+            }
+        } else if (msg.what == MSG_CODE_LOGIN) {
+            WebView webView = mWebViewRef.get();
+            if (webView != null) {
+                webView.loadUrl("javascript:location.href=document.getElementById('login_normal').getAttribute('href');");
+                monitorCount = 0;
+                this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
             }
         }
     }
