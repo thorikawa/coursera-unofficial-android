@@ -37,7 +37,11 @@
             android:name="com.polysfactory.coursera.activity.LectureIndexActivity"
             android:label="@string/app_name" >
         </activity>
-
+        <activity
+            android:name="com.polysfactory.coursera.activity.VideoPlayerActivity"
+            android:label="@string/app_name" >
+        </activity>
+        
         <service android:name="com.polysfactory.coursera.auth.CourseraAuthenticatorService" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
