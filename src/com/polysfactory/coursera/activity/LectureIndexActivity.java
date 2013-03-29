@@ -4,9 +4,13 @@ package com.polysfactory.coursera.activity;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 
@@ -19,7 +23,7 @@ import com.polysfactory.coursera.api.LoadCourseIndexTask.Callback;
 import com.polysfactory.coursera.model.Course;
 import com.polysfactory.coursera.model.VideoLecture;
 
-public class LectureIndexActivity extends Activity {
+public class LectureIndexActivity extends Activity implements OnItemClickListener {
 
     private ListView mVideoLectureListView;
 
@@ -30,6 +34,7 @@ public class LectureIndexActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lecture_index);
         mVideoLectureListView = (ListView) findViewById(R.id.video_lecture_list);
+        mVideoLectureListView.setOnItemClickListener(this);
         mWebView = new WebView(this);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -55,5 +60,13 @@ public class LectureIndexActivity extends Activity {
                     }
                 }, mWebView);
         loadCourseIndexTask.execute();
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        VideoLecture item = (VideoLecture) parent.getItemAtPosition(position);
+        Intent intent = new Intent(this, VideoPlayerActivity.class);
+        intent.putExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE, item);
+        this.startActivity(intent);
     }
 }
