@@ -33,7 +33,9 @@ public class LoadCourseIndexTaskTestCase extends AndroidTestCase {
             }
         };
 
+        System.out.println("mockito start");
         WebView webView = mock(WebView.class);
+        System.out.println("mockito end");
         LoadCourseIndexTask loadCourseIndexTask = LoadCourseIndexTask.newInstance(authToken,
                 course, callback, webView);
         loadCourseIndexTask.execute();
