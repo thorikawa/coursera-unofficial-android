@@ -10,6 +10,8 @@ public class VideoLecture implements Parcelable {
 
     public String url;
 
+    public String scriptUrl;
+
     @Override
     public int describeContents() {
         return 0;
@@ -19,6 +21,7 @@ public class VideoLecture implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title);
         dest.writeString(url);
+        dest.writeString(scriptUrl);
     }
 
     public static final Parcelable.Creator<VideoLecture> CREATOR = new Parcelable.Creator<VideoLecture>() {
@@ -37,5 +40,6 @@ public class VideoLecture implements Parcelable {
     private VideoLecture(Parcel in) {
         title = in.readString();
         url = in.readString();
+        scriptUrl = in.readString();
     }
 }

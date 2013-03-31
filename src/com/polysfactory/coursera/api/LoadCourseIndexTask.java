@@ -29,8 +29,6 @@ public class LoadCourseIndexTask extends Handler {
 
     private static final int MSG_FINISH_GET_VIDEO_LECTURES = 100;
 
-    private static final String LECTURE_LINK_SELECTOR = ".lecture-link";
-
     private final AuthToken mAuthToken;
 
     private final Course mCourse;
@@ -123,16 +121,22 @@ public class LoadCourseIndexTask extends Handler {
                         Log.d(TAG, "fired!!");
                         webView.loadUrl(
                                 "javascript:document.addEventListener('DOMContentLoaded', function(){"
-                                        + "var items=document.querySelectorAll('.course-lecture-item-resource');"
+                                        + "var parent=document.querySelectorAll('.course-item-list');"
+                                        + "var items = parent[0].getElementsByTagName('li');"
                                         + "for (var i=0; i<items.length; i++) { "
+                                        + " var lecture = items[i].querySelectorAll('.lecture-link');"
+                                        + " var title = lecture[0].innerHTML;"
                                         + " var links = items[i].getElementsByTagName('a');"
                                         + " for (var j=0; j<links.length; j++) { "
                                         + "   var url = links[j].getAttribute('href');"
-                                        + "     if (url.match(/download.mp4/)) {"
-                                        + "       android.findLectureLink('title', url);"
-                                        + "     }"
+                                        + "   if (url.match(/download.mp4/)) {"
+                                        + "     vurl = url;"
+                                        + "   } else if (url.match(/format=srt/)) {"
+                                        + "     suburl = url;"
                                         + "   }"
                                         + " }"
+                                        + " android.findLectureLink(title, vurl, suburl);"
+                                        + "}"
                                         + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");"
                                         + "});");
                         return;
@@ -161,11 +165,12 @@ public class LoadCourseIndexTask extends Handler {
         private JsCallback mCallback;
 
         @JavascriptInterface
-        public void findLectureLink(String title, String url) {
+        public void findLectureLink(String title, String url, String scriptUrl) {
             Log.v(TAG, title + ":" + url);
             VideoLecture videoLecture = new VideoLecture();
             videoLecture.title = title;
             videoLecture.url = url;
+            videoLecture.scriptUrl = scriptUrl;
             videoLectures.add(videoLecture);
         }
 

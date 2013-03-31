@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.VideoView;
 
 import com.polysfactory.coursera.Constants;
@@ -23,6 +25,9 @@ public class VideoPlayerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.video_player);
         this.mVideoView = (VideoView) findViewById(R.id.video_view);
 
@@ -30,6 +35,8 @@ public class VideoPlayerActivity extends Activity {
         VideoLecture videoLecture = intent
                 .getParcelableExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE);
         Log.v(TAG, "play:" + videoLecture.url);
+        Log.v(TAG, "subscript:" + videoLecture.scriptUrl);
+        // mVideoView.setS
 
         ScoutUrlTask videoUrlFindTask = new ScoutUrlTask(videoLecture.url, new Callback() {
             @Override
