@@ -142,7 +142,7 @@ public class LoadCourseIndexTask extends Handler {
                     }
                 }
                 if (this.monitorCount < MAX_MONITOR_COUNT) {
-                    this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                    this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, MONITOR_INTERVAL_MSEC);
                 }
             }
         } else if (msg.what == MSG_CODE_LOGIN) {
@@ -150,7 +150,7 @@ public class LoadCourseIndexTask extends Handler {
             if (webView != null) {
                 webView.loadUrl("javascript:location.href=document.getElementById('login_normal').getAttribute('href');");
                 monitorCount = 0;
-                this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, 500);
+                this.sendEmptyMessageDelayed(MSG_CODE_MONITOR_WEWBVIEW, MONITOR_INTERVAL_MSEC);
             }
         }
     }
