@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
+    android:minHeight="?android:attr/listPreferredItemHeight"
     android:gravity="center_vertical"
     android:orientation="horizontal" >
 
@@ -23,7 +23,8 @@
             android:paddingBottom="0dp"
             android:singleLine="true"
             android:textSize="15sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:text="@string/dummy" />
     </LinearLayout>
 
 </LinearLayout>

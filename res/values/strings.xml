@@ -8,5 +8,6 @@
     <string name="password">Password</string>
     <string name="ok">OK</string>
     <string name="auth_error">Username or Password was not correct.</string>
+    <string name="dummy">dummy</string>
 
 </resources>
