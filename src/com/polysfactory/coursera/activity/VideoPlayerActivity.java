@@ -30,13 +30,11 @@ public class VideoPlayerActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.video_player);
         this.mVideoView = (VideoView) findViewById(R.id.video_view);
-
         Intent intent = getIntent();
         VideoLecture videoLecture = intent
                 .getParcelableExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE);
         Log.v(TAG, "play:" + videoLecture.url);
         Log.v(TAG, "subscript:" + videoLecture.scriptUrl);
-        // mVideoView.setS
 
         ScoutUrlTask videoUrlFindTask = new ScoutUrlTask(videoLecture.url, new Callback() {
             @Override
@@ -53,4 +51,5 @@ public class VideoPlayerActivity extends Activity {
         });
         videoUrlFindTask.execute();
     }
+
 }
