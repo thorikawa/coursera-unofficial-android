@@ -10,6 +10,8 @@ import android.widget.VideoView;
 
 import com.polysfactory.coursera.Constants;
 import com.polysfactory.coursera.R;
+import com.polysfactory.coursera.api.ScoutUrlTask;
+import com.polysfactory.coursera.api.ScoutUrlTask.Callback;
 import com.polysfactory.coursera.model.VideoLecture;
 
 public class VideoPlayerActivity extends Activity {
@@ -28,6 +30,20 @@ public class VideoPlayerActivity extends Activity {
         VideoLecture videoLecture = intent
                 .getParcelableExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE);
         Log.v(TAG, "play:" + videoLecture.url);
-        mVideoView.setVideoURI(Uri.parse(videoLecture.url));
+
+        ScoutUrlTask videoUrlFindTask = new ScoutUrlTask(videoLecture.url, new Callback() {
+            @Override
+            public void onRedirected(final String url) {
+                Log.v(TAG, "find URL:" + url);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mVideoView.setVideoURI(Uri.parse(url));
+                        mVideoView.start();
+                    }
+                });
+            }
+        });
+        videoUrlFindTask.execute();
     }
 }

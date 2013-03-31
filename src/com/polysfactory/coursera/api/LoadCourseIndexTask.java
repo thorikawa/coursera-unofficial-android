@@ -121,16 +121,20 @@ public class LoadCourseIndexTask extends Handler {
                 if (url != null) {
                     if (url.equals(mCourse.getLectureIndexUrl())) {
                         Log.d(TAG, "fired!!");
-                        webView.loadUrl("javascript:document.addEventListener('DOMContentLoaded', function(){"
-                                + "var links=document.querySelectorAll('" + LECTURE_LINK_SELECTOR
-                                + "');"
-                                + "for (var i=0; i<links.length; i++) { "
-                                + " var t = links[i].innerHTML;"
-                                + " var u = links[i].getAttribute('href');"
-                                + " android.findLectureLink(t, u);"
-                                + "}"
-                                + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");"
-                                + "});");
+                        webView.loadUrl(
+                                "javascript:document.addEventListener('DOMContentLoaded', function(){"
+                                        + "var items=document.querySelectorAll('.course-lecture-item-resource');"
+                                        + "for (var i=0; i<items.length; i++) { "
+                                        + " var links = items[i].getElementsByTagName('a');"
+                                        + " for (var j=0; j<links.length; j++) { "
+                                        + "   var url = links[j].getAttribute('href');"
+                                        + "     if (url.match(/download.mp4/)) {"
+                                        + "       android.findLectureLink('title', url);"
+                                        + "     }"
+                                        + "   }"
+                                        + " }"
+                                        + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");"
+                                        + "});");
                         return;
                     } else if (url.startsWith(mCourse.getAuthUrl())) {
                         this.sendEmptyMessageDelayed(MSG_CODE_LOGIN, MONITOR_INTERVAL_MSEC);
