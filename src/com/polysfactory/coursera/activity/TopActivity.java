@@ -97,8 +97,8 @@ public class TopActivity extends Activity implements
                     authToken, new Callback() {
                         @Override
                         public void onFinish(MyListItem[] courses) {
-                            mListView.setAdapter(new MyCourseListAdapter(TopActivity.this
-                                    .getApplicationContext(), courses));
+                            mListView
+                                    .setAdapter(new MyCourseListAdapter(TopActivity.this, courses));
                         }
                     });
             loadCourseListTask.execute();

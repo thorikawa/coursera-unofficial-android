@@ -9,5 +9,6 @@
     <string name="ok">OK</string>
     <string name="auth_error">Username or Password was not correct.</string>
     <string name="dummy">dummy</string>
+    <string name="course_icon">course icon</string>
 
 </resources>

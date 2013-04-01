@@ -11,6 +11,7 @@ public class MyListItem {
     public String photo;
     public Course[] courses;
     public University[] universities;
+    public String smallIcon;
 
     public String getUniversityName() {
         if (universities == null || universities.length == 0) {
