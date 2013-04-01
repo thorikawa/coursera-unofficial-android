@@ -1,16 +1,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="45dp"
-    android:minHeight="45dp"
-    android:paddingLeft="60dp"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:paddingLeft="30dp"
     android:gravity="center_vertical">
 
     <TextView
-        android:id="@+id/video_lecture_name"
+        android:id="@+id/video_lecture_group_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:singleLine="true"
         android:text="@string/dummy"
-        android:textSize="12sp" />
+        android:textSize="15sp"
+        android:textStyle="bold" />
 
 </LinearLayout>

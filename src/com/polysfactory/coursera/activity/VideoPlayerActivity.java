@@ -34,7 +34,7 @@ public class VideoPlayerActivity extends Activity {
         VideoLecture videoLecture = intent
                 .getParcelableExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE);
         Log.v(TAG, "play:" + videoLecture.url);
-        Log.v(TAG, "subscript:" + videoLecture.scriptUrl);
+        Log.v(TAG, "subscript:" + videoLecture.subUrl);
 
         ScoutUrlTask videoUrlFindTask = new ScoutUrlTask(videoLecture.url, new Callback() {
             @Override

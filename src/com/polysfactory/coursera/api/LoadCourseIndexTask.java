@@ -3,10 +3,12 @@ package com.polysfactory.coursera.api;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.CookieManager;
@@ -14,10 +16,14 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.polysfactory.coursera.api.LoadCourseIndexTask.JsObject.JsCallback;
 import com.polysfactory.coursera.model.AuthToken;
 import com.polysfactory.coursera.model.Course;
 import com.polysfactory.coursera.model.VideoLecture;
+import com.polysfactory.coursera.model.VideoLectureGroup;
 
 public class LoadCourseIndexTask extends Handler {
 
@@ -77,7 +83,7 @@ public class LoadCourseIndexTask extends Handler {
                 if (eventCode == MSG_FINISH_GET_VIDEO_LECTURES) {
                     Log.v(TAG, "video lecture result");
                     if (mCallback != null) {
-                        mCallback.onFinish(mJsObject.getVideoLectures());
+                        mCallback.onFinish(mJsObject.getVideoLectureGroups());
                     }
                 }
             }
@@ -106,7 +112,7 @@ public class LoadCourseIndexTask extends Handler {
     }
 
     public static interface Callback {
-        public void onFinish(List<VideoLecture> results);
+        public void onFinish(List<VideoLectureGroup> results);
     }
 
     public void handleMessage(android.os.Message msg) {
@@ -121,22 +127,33 @@ public class LoadCourseIndexTask extends Handler {
                         Log.d(TAG, "fired!!");
                         webView.loadUrl(
                                 "javascript:document.addEventListener('DOMContentLoaded', function(){"
-                                        + "var parent=document.querySelectorAll('.course-item-list');"
-                                        + "var items = parent[0].getElementsByTagName('li');"
-                                        + "for (var i=0; i<items.length; i++) { "
-                                        + " var lecture = items[i].querySelectorAll('.lecture-link');"
-                                        + " var title = lecture[0].innerHTML;"
-                                        + " var links = items[i].getElementsByTagName('a');"
-                                        + " for (var j=0; j<links.length; j++) { "
-                                        + "   var url = links[j].getAttribute('href');"
-                                        + "   if (url.match(/download.mp4/)) {"
-                                        + "     vurl = url;"
-                                        + "   } else if (url.match(/format=srt/)) {"
-                                        + "     suburl = url;"
-                                        + "   }"
-                                        + " }"
-                                        + " android.findLectureLink(title, vurl, suburl);"
-                                        + "}"
+                                        + "var headers = document.querySelectorAll('.course-item-list-header');"
+                                        + "var containers = document.querySelectorAll('.course-item-list-section-list');"
+                                        + "for (var i=0; i<headers.length; i++) { "
+                                        + " var header = headers[i];"
+                                        + " console.log(header);"
+                                        + " console.log(header.getElementsByTagName('h3'));"
+                                        + " console.log(header.getElementsByTagName('h3')[0]);"
+                                        + " var groupTitle = header.getElementsByTagName('h3')[0].innerHTML;"
+                                        + " console.log(groupTitle);"
+                                        + " var items = containers[i].getElementsByTagName('li');"
+                                        + " var lectures = [];"
+                                        + " for (var k=0; k<items.length; k++) { "
+                                        + "  var lecture = items[k].querySelectorAll('.lecture-link');"
+                                        + "  var title = lecture[0].innerHTML;"
+                                        + "  var links = items[k].getElementsByTagName('a');"
+                                        + "  for (var j=0; j<links.length; j++) { "
+                                        + "    var url = links[j].getAttribute('href');"
+                                        + "    if (url.match(/download.mp4/)) {"
+                                        + "      vurl = url;"
+                                        + "    } else if (url.match(/format=srt/)) {"
+                                        + "      suburl = url;"
+                                        + "    }"
+                                        + "  }"
+                                        + "  lectures.push({'title':title, 'url':vurl, 'sub_url':suburl});"
+                                        + " }/* end of lecture item loop */"
+                                        + " android.addLectureGroup(groupTitle, JSON.stringify(lectures));"
+                                        + "}/* end of lecture group loop */"
                                         + "android.trigger(" + MSG_FINISH_GET_VIDEO_LECTURES + ");"
                                         + "});");
                         return;
@@ -160,18 +177,22 @@ public class LoadCourseIndexTask extends Handler {
     }
 
     static class JsObject {
-        private final List<VideoLecture> videoLectures = new ArrayList<VideoLecture>();
+        private final List<VideoLectureGroup> videoLectureGroups = new ArrayList<VideoLectureGroup>();
 
         private JsCallback mCallback;
 
+        private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(
+                FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+
         @JavascriptInterface
-        public void findLectureLink(String title, String url, String scriptUrl) {
-            Log.v(TAG, title + ":" + url);
-            VideoLecture videoLecture = new VideoLecture();
-            videoLecture.title = title;
-            videoLecture.url = url;
-            videoLecture.scriptUrl = scriptUrl;
-            videoLectures.add(videoLecture);
+        public void addLectureGroup(String groupTitleHTML, String jsonVideoLectureItemArray) {
+            String groupTitle = Html.fromHtml(groupTitleHTML).toString();
+            Log.v(TAG, groupTitle + ":" + jsonVideoLectureItemArray);
+            VideoLecture[] videoLectureArray = GSON.fromJson(jsonVideoLectureItemArray,
+                    VideoLecture[].class);
+            VideoLectureGroup videoLectureGroup = new VideoLectureGroup(groupTitle,
+                    Arrays.asList(videoLectureArray));
+            videoLectureGroups.add(videoLectureGroup);
         }
 
         @JavascriptInterface
@@ -181,8 +202,8 @@ public class LoadCourseIndexTask extends Handler {
             }
         }
 
-        public List<VideoLecture> getVideoLectures() {
-            return Collections.unmodifiableList(videoLectures);
+        public List<VideoLectureGroup> getVideoLectureGroups() {
+            return Collections.unmodifiableList(videoLectureGroups);
         }
 
         public void registerCallback(JsCallback callback) {

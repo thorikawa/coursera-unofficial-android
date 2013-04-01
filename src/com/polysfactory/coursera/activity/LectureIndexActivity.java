@@ -9,10 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 
 import com.polysfactory.coursera.Constants;
 import com.polysfactory.coursera.CourseraApplication;
@@ -22,10 +21,11 @@ import com.polysfactory.coursera.api.LoadCourseIndexTask;
 import com.polysfactory.coursera.api.LoadCourseIndexTask.Callback;
 import com.polysfactory.coursera.model.Course;
 import com.polysfactory.coursera.model.VideoLecture;
+import com.polysfactory.coursera.model.VideoLectureGroup;
 
-public class LectureIndexActivity extends Activity implements OnItemClickListener {
+public class LectureIndexActivity extends Activity implements OnChildClickListener {
 
-    private ListView mVideoLectureListView;
+    private ExpandableListView mVideoLectureListView;
 
     private WebView mWebView;
 
@@ -33,8 +33,8 @@ public class LectureIndexActivity extends Activity implements OnItemClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lecture_index);
-        mVideoLectureListView = (ListView) findViewById(R.id.video_lecture_list);
-        mVideoLectureListView.setOnItemClickListener(this);
+        mVideoLectureListView = (ExpandableListView) findViewById(R.id.video_lecture_list);
+        mVideoLectureListView.setOnChildClickListener(this);
         mWebView = new WebView(this);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
@@ -49,7 +49,7 @@ public class LectureIndexActivity extends Activity implements OnItemClickListene
         LoadCourseIndexTask loadCourseIndexTask = LoadCourseIndexTask.newInstance(
                 application.getAuthToken(), course, new Callback() {
                     @Override
-                    public void onFinish(final List<VideoLecture> results) {
+                    public void onFinish(final List<VideoLectureGroup> results) {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -63,10 +63,13 @@ public class LectureIndexActivity extends Activity implements OnItemClickListene
     }
 
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        VideoLecture item = (VideoLecture) parent.getItemAtPosition(position);
+    public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
+            int childPosition, long id) {
+        VideoLecture item = (VideoLecture) parent.getExpandableListAdapter().getChild(
+                groupPosition, childPosition);
         Intent intent = new Intent(this, VideoPlayerActivity.class);
         intent.putExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE, item);
         this.startActivity(intent);
+        return true;
     }
 }
