@@ -154,6 +154,7 @@ public class DownloadImagesTask {
             if (imageView != null) {
                 if (!((String) imageView.getTag()).equals(this.mUrl)) {
                     Log.w(TAG, "outdated image load:" + this.mUrl);
+                    return;
                 }
                 imageView.setImageBitmap(this.mBitmap);
                 if (progressBar != null) {
