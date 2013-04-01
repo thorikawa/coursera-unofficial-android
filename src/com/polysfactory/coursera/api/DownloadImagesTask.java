@@ -105,7 +105,7 @@ public class DownloadImagesTask {
             if (bitmap != null) {
                 Log.v(TAG, "cache hits!: " + mUrl);
             } else {
-                bitmap = downloadImage(mUrl, 2 /* TODO */);
+                bitmap = downloadImage(mUrl, 4 /* TODO */);
             }
 
             // display on UI thread
