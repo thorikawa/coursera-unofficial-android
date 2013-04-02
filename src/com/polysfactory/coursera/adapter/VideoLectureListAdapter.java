@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.polysfactory.coursera.R;
@@ -29,6 +30,8 @@ public class VideoLectureListAdapter extends BaseExpandableListAdapter {
     }
 
     static class ViewHolder {
+        ImageView checkbox;
+
         TextView videoLectureNameTextView;
     }
 
@@ -95,11 +98,13 @@ public class VideoLectureListAdapter extends BaseExpandableListAdapter {
             viewHolder = new ViewHolder();
             viewHolder.videoLectureNameTextView = (TextView) convertView
                     .findViewById(R.id.video_lecture_name);
+            viewHolder.checkbox = (ImageView) convertView.findViewById(R.id.btn_check);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         viewHolder.videoLectureNameTextView.setText(childItem.getTitle());
+        viewHolder.checkbox.setVisibility(childItem.viewed ? View.VISIBLE : View.INVISIBLE);
         return convertView;
     }
 

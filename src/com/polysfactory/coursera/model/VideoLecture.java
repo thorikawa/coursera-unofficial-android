@@ -13,6 +13,8 @@ public class VideoLecture implements Parcelable {
 
     public String subUrl;
 
+    public boolean viewed;
+
     public String getTitle() {
         return this.title;
     }
