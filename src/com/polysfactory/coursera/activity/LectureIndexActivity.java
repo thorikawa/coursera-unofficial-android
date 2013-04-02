@@ -12,6 +12,7 @@ import android.webkit.WebViewClient;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import com.polysfactory.coursera.Constants;
 import com.polysfactory.coursera.CourseraApplication;
@@ -29,11 +30,15 @@ public class LectureIndexActivity extends Activity implements OnChildClickListen
 
     private WebView mWebView;
 
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lecture_index);
         mVideoLectureListView = (ExpandableListView) findViewById(R.id.video_lecture_list);
+        mProgressBar = (ProgressBar) findViewById(R.id.screen_loading);
+
         mVideoLectureListView.setOnChildClickListener(this);
         mWebView = new WebView(this);
         mWebView.setWebViewClient(new WebViewClient() {
@@ -55,10 +60,12 @@ public class LectureIndexActivity extends Activity implements OnChildClickListen
                             public void run() {
                                 mVideoLectureListView.setAdapter(new VideoLectureListAdapter(
                                         LectureIndexActivity.this, results));
+                                mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         });
                     }
                 }, mWebView);
+        mProgressBar.setVisibility(View.VISIBLE);
         loadCourseIndexTask.execute();
     }
 

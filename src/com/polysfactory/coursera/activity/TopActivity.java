@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.polysfactory.coursera.Constants;
 import com.polysfactory.coursera.CourseraApplication;
@@ -32,9 +33,11 @@ import com.polysfactory.coursera.model.MyListItem;
 public class TopActivity extends Activity implements
         AccountManagerCallback<Bundle>, OnItemClickListener {
 
-    String mToken;
+    private String mToken;
 
-    ListView mListView;
+    private ListView mListView;
+
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class TopActivity extends Activity implements
         setContentView(R.layout.my_course_list);
 
         mListView = (ListView) findViewById(R.id.my_course_list);
+        mProgressBar = (ProgressBar) findViewById(R.id.screen_loading);
         mListView.setOnItemClickListener(this);
 
         // login check
@@ -99,8 +103,10 @@ public class TopActivity extends Activity implements
                         public void onFinish(MyListItem[] courses) {
                             mListView
                                     .setAdapter(new MyCourseListAdapter(TopActivity.this, courses));
+                            mProgressBar.setVisibility(View.INVISIBLE);
                         }
                     });
+            mProgressBar.setVisibility(View.VISIBLE);
             loadCourseListTask.execute();
         } catch (OperationCanceledException e) {
             // TODO Auto-generated catch block
