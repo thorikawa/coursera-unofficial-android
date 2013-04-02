@@ -58,8 +58,19 @@ public class LectureIndexActivity extends Activity implements OnChildClickListen
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                mVideoLectureListView.setAdapter(new VideoLectureListAdapter(
-                                        LectureIndexActivity.this, results));
+                                VideoLectureListAdapter adapter = new VideoLectureListAdapter(
+                                        LectureIndexActivity.this, results);
+                                mVideoLectureListView.setAdapter(adapter);
+
+                                // expand lecture group if there is unviewed
+                                // lecture.
+                                for (int pos = 0, n = adapter.getGroupCount(); pos < n; pos++) {
+                                    VideoLectureGroup videoLectureGroup = (VideoLectureGroup) adapter
+                                            .getGroup(pos);
+                                    if (!videoLectureGroup.isAllLectureViewed()) {
+                                        mVideoLectureListView.expandGroup(pos);
+                                    }
+                                }
                                 mProgressBar.setVisibility(View.INVISIBLE);
                             }
                         });

@@ -17,4 +17,13 @@ public class VideoLectureGroup {
     public List<VideoLecture> getLectureList() {
         return Collections.unmodifiableList(lectureList);
     }
+
+    public boolean isAllLectureViewed() {
+        for (VideoLecture lecture : lectureList) {
+            if (!lecture.viewed) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
