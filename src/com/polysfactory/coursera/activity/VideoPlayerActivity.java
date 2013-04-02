@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import com.polysfactory.coursera.Constants;
@@ -29,7 +30,11 @@ public class VideoPlayerActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.video_player);
-        this.mVideoView = (VideoView) findViewById(R.id.video_view);
+
+        mVideoView = (VideoView) findViewById(R.id.video_view);
+        mVideoView.requestFocus();
+        mVideoView.setMediaController(new MediaController(this));
+
         Intent intent = getIntent();
         VideoLecture videoLecture = intent
                 .getParcelableExtra(Constants.COURSERA_INTENT_KEY_VIDEO_LECTURE);
